@@ -3,6 +3,8 @@ import torch.nn as nn
 from itertools import chain
 from gen_disc import Generator, Discriminator
 
+from utils import tweak_grad
+
 class CycleGAN:
     def __init__(self, lambda_cycle = 2):
         self.lambda_cycle = lambda_cycle
@@ -48,10 +50,25 @@ class CycleGAN:
 
         disc_loss = (loss_real + loss_fake) / 2
         disc_loss.backward()
+
+    def disc_backward(self, data):
+        fakeAs, fakeBs = data['fakeAs'], data['fakeBs']
+        realAs, realBs = data['realAs'], data['realBs']
+        new_fakeAs = self.A_pool.select(fakeAs)
+        new_fakeBs = self.B_pool.select(fakeBs)
+        self._get_disc_loss(new_fakeAs, realAs, self.A_disc)
+        self._get_disc_loss(new_fakeBs, realBs, self.B_disc)
+
+
+    def train_one_epoch(self, batch):
+        data = self.forward(batch)
+        tweak_grad([self.A_disc, self.B_disc])
+        self.gen_optimizer.zero_grad()
+        self.gen_backward(data)
+        self.gen_optimizer.step()
+
+        tweak_grad([self.A_disc, self.B_disc], True)
+        self.disc_optimizer.zero_grad()
+        self.disc_backward(data)
+        self.disc_optimizer.step()
         
-
-
-
-
-
-
