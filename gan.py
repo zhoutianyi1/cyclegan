@@ -5,13 +5,14 @@ from gen_disc import Generator, Discriminator
 
 from utils import tweak_grad
 
+device = 'cuda'
 class CycleGAN:
     def __init__(self, lambda_cycle = 2):
         self.lambda_cycle = lambda_cycle
-        self.AB_gen = Generator()
-        self.BA_gen = Generator()
-        self.A_disc = Discriminator()
-        self.B_disc = Discriminator()
+        self.AB_gen = Generator().to(device)
+        self.BA_gen = Generator().to(device)
+        self.A_disc = Discriminator().to(device)
+        self.B_disc = Discriminator().to(device)
 
         self.gan_loss = nn.BCEWithLogitsLoss()
         self.cycle_loss = nn.L1Loss()
