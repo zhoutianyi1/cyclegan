@@ -54,10 +54,8 @@ class CycleGAN:
     def disc_backward(self, data):
         fakeAs, fakeBs = data['fakeAs'], data['fakeBs']
         realAs, realBs = data['realAs'], data['realBs']
-        new_fakeAs = self.A_pool.select(fakeAs)
-        new_fakeBs = self.B_pool.select(fakeBs)
-        self._get_disc_loss(new_fakeAs, realAs, self.A_disc)
-        self._get_disc_loss(new_fakeBs, realBs, self.B_disc)
+        self._get_disc_loss(fakeAs, realAs, self.A_disc)
+        self._get_disc_loss(fakeBs, realBs, self.B_disc)
 
 
     def train_one_epoch(self, batch):
