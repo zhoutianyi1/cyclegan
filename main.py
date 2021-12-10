@@ -8,14 +8,16 @@ import random
 from PIL import Image
 from torchvision import transforms
 
-dataset = UnpairedTrainDataset()
-loader = DataLoader(dataset, batch_size=2, shuffle=True)
-MODE = 'test'
-
+MODE = 'train'
 
 if MODE == 'train':
+    dataset = UnpairedTrainDataset()
+    loader = DataLoader(dataset, batch_size=2, shuffle=True)
     model = CycleGAN()
     for epoch in range(50):
+        print('-'*50)
+        print(f'We are at epoch {epoch}')
+        print('-'*50)
         for i, data in enumerate(loader):
             model.train_one_epoch(data)
     torch.save(model.AB_gen.state_dict(), 'ab.pth')
@@ -39,10 +41,4 @@ elif MODE=='test':
     assert(fakeA.shape == torch.Size([1, 3, 600, 600]))
     im = transforms.ToPILImage()(fakeA[0]).convert("RGB")
     im.show()
-
-
-
-
-
-
 
